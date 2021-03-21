@@ -19,7 +19,7 @@ class Snowflake
     const MIN_TIMESTAMP = 1099511627775; //
     const SHIFT_NODE_ID = 12; // 机器ID左移位数,63 - 51
     const SHIFT_TIMESTAMP = 22; // 毫秒时间戳左移位数,63 - 41
-    const TWEPOCH = 1616308934598; // 开始时间,固定一个小于当前时间的毫秒数
+    const EPOCH = 1616308934598; // 开始时间,固定一个小于当前时间的毫秒数
 
     /**
      * @return self
@@ -84,7 +84,7 @@ class Snowflake
         self::$lastTimestamp = $timestamp;
 
         // ID偏移组合生成最终的ID，并返回ID
-        return ((sprintf('%.0f', $timestamp+self::MIN_TIMESTAMP) - sprintf('%.0f', self::TWEPOCH)) << self::SHIFT_TIMESTAMP)
+        return ((sprintf('%.0f', $timestamp+self::MIN_TIMESTAMP) - sprintf('%.0f', self::EPOCH)) << self::SHIFT_TIMESTAMP)
             | (self::$nodeId << self::SHIFT_NODE_ID)
             | self::$sequence;
 
@@ -92,7 +92,7 @@ class Snowflake
 
     public function decodeFromId($id,$json=0) {
         $id = decbin($id);
-        $ts = bindec(substr($id,0,41))- self::MIN_TIMESTAMP + self::TWEPOCH;
+        $ts = bindec(substr($id,0,41))- self::MIN_TIMESTAMP + self::EPOCH;
         $nid = bindec(substr($id,41,10));
         $seq = bindec(substr($id,51,12));
         $data = [
