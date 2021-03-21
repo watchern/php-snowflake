@@ -31,7 +31,7 @@ $node_id = rand(1, 1023);//随机数
 $id = Snowflake::getInstance()->setNodeId(1)->nextId();
 echo $id.'==>'.json_encode(Snowflake::getInstance()->decodeFromId($id));
 
-// 5985252473667850242==>{"timeMicro":1616318737218,"time":1616318738,"mid":1,"sequence":2}
+// 5985252473667850242==>{"ts":1616318737218,"nid":1,"seq":2}
 
 ```
 

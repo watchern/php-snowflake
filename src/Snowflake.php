@@ -19,7 +19,7 @@ class Snowflake
     const MIN_TIMESTAMP = 1099511627775; //
     const SHIFT_NODE_ID = 12; // 机器ID左移位数,63 - 51
     const SHIFT_TIMESTAMP = 22; // 毫秒时间戳左移位数,63 - 41
-    const TWEPOCH = 1288834974657; // 开始时间,固定一个小于当前时间的毫秒数
+    const TWEPOCH = 1616308934598; // 开始时间,固定一个小于当前时间的毫秒数
 
     /**
      * @return self
@@ -41,7 +41,7 @@ class Snowflake
         return self::$self;
     }
 
-    private function timeGen()
+    private function timeGen(): string
     {
         //获得当前时间戳
         $time = explode(' ', microtime());
@@ -49,7 +49,7 @@ class Snowflake
         return $time[1] . $time2;
     }
 
-    private function tilNextMillis($lastTimestamp)
+    private function tilNextMillis($lastTimestamp): string
     {
         $timestamp = $this->timeGen();
         while ($timestamp <= $lastTimestamp) {
@@ -58,9 +58,9 @@ class Snowflake
         return $timestamp;
     }
 
-    public function nextId()
+    public function nextId(): int
     {
-        if (PHP_INT_SIZE === 8) {
+        if (PHP_INT_SIZE === 4) {
             return 0;
         }
         $timestamp = $this->timeGen();
@@ -84,22 +84,21 @@ class Snowflake
         self::$lastTimestamp = $timestamp;
 
         // ID偏移组合生成最终的ID，并返回ID
-        $nextId = ((sprintf('%.0f', $timestamp) - sprintf( '%.0f', self::TWEPOCH) + sprintf( '%.0f', self::MIN_TIMESTAMP)) << self::SHIFT_TIMESTAMP)
+        return ((sprintf('%.0f', $timestamp+self::MIN_TIMESTAMP) - sprintf('%.0f', self::TWEPOCH)) << self::SHIFT_TIMESTAMP)
             | (self::$nodeId << self::SHIFT_NODE_ID)
             | self::$sequence;
 
-        return $nextId;
     }
 
     public function decodeFromId($id,$json=0) {
         $id = decbin($id);
-        $timestamp = bindec(substr($id,0,41))- self::MIN_TIMESTAMP + self::TWEPOCH;
-        $nodeId = bindec(substr($id,41,10));
-        $sequence = bindec(substr($id,51,12));
+        $ts = bindec(substr($id,0,41))- self::MIN_TIMESTAMP + self::TWEPOCH;
+        $nid = bindec(substr($id,41,10));
+        $seq = bindec(substr($id,51,12));
         $data = [
-            "timestamp"=>$timestamp,
-            'nodeId'=>$nodeId,
-            "sequence"=>$sequence
+            "ts"=>$ts,
+            'nid'=>$nid,
+            "seq"=>$seq
         ];
         if($json){
             return json_encode($data);
