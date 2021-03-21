@@ -1,0 +1,10 @@
+.idea
+*.DS_Store
+/vendor
+/coverage
+sftp-config.json
+.subsplit
+.php_cs.cache
+tests/RedisTest.php
+composer.lock
+tests/LocalTest.php
